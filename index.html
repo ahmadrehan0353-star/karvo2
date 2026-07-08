@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Karvo — Trusted local pros, one call away</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150"><rect width="150" height="150" rx="30" fill="%23202225"/><rect x="50" y="38" width="14" height="74" rx="7" fill="%23ffffff"/><polygon points="104,38 74,72 86,72 62,112 92,76 80,76" fill="%23f07032"/></svg>'>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#eeedea;--paper:#17181a;--card:#222427;--green:#f07032;--green-deep:#d85a1f;
+    --marigold:#f5b04c;--muted:#a3a49e;--line:#2c2e33;
+    --grad:linear-gradient(135deg,#f58a4a,#e85d1f);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:'Inter',sans-serif;color:var(--ink);min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;
+    background:
+      radial-gradient(700px 420px at 88% -10%, rgba(240,112,50,.16), transparent 60%),
+      radial-gradient(800px 520px at -12% 40%, rgba(245,176,76,.08), transparent 60%),
+      var(--paper);
+  }
+  h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.02em}
+  .logo{display:flex;align-items:center;gap:12px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.8rem;margin-bottom:14px}
+  .logo-mark{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#2a2c30 60%,#1d1f22);display:grid;place-items:center;border:1.5px dashed rgba(255,217,59,.75)}
+  .logo-mark svg{width:68%;height:68%}
+  .tagline{color:var(--muted);margin-bottom:44px;text-align:center;max-width:46ch;font-size:1.05rem}
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:20px;width:100%;max-width:720px}
+  @media(max-width:640px){.choices{grid-template-columns:1fr}}
+  .choice{
+    background:var(--card);border:1px solid var(--line);border-radius:22px;padding:36px 30px;
+    text-align:center;cursor:pointer;text-decoration:none;color:var(--ink);
+    transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    display:flex;flex-direction:column;align-items:center;gap:12px;
+  }
+  .choice:hover{transform:translateY(-4px);border-color:rgba(240,112,50,.5);box-shadow:0 14px 34px rgba(0,0,0,.35)}
+  .choice .big{font-size:2.6rem}
+  .choice h2{font-size:1.35rem}
+  .choice p{font-size:.9rem;color:var(--muted);max-width:30ch}
+  .choice .go{margin-top:8px;background:var(--grad);color:#2a1300;font-weight:600;font-size:.92rem;padding:11px 26px;border-radius:999px;box-shadow:0 4px 16px rgba(240,112,50,.28)}
+  footer{margin-top:56px;color:var(--muted);font-size:.85rem;text-align:center}
+</style>
+</head>
+<body>
+  <div class="logo">
+    <span class="logo-mark"><svg viewBox="30 25 90 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="42" y="34" width="15" height="82" rx="7.5" fill="#ffffff"/><polygon points="104,32 71,70 84,70 58,118 91,74 78,74" fill="#f07032"/></svg></span>
+    Karvo
+  </div>
+  <p class="tagline">Trusted local pros, one call away — verified tutors, tailors, electricians and repair experts near you.</p>
+
+  <div class="choices">
+    <a class="choice" href="login.html">
+      <span class="big">🏠</span>
+      <h2>I need a service</h2>
+      <p>Find and book verified pros in your area.</p>
+      <span class="go">Join as a customer</span>
+    </a>
+    <a class="choice" href="join.html">
+      <span class="big">🛠️</span>
+      <h2>I'm a skilled pro</h2>
+      <p>Get job requests from customers near you — free to join.</p>
+      <span class="go">Join as a pro</span>
+    </a>
+  </div>
+
+  <footer>© 2026 Karvo. Skilled hands, trusted homes.</footer>
+</body>
+</html>
