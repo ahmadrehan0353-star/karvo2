@@ -1,4 +1,7 @@
 User-agent: *
+
 Allow: /
+
+Disallow: /admin.html
 
 Sitemap: https://karvo-swart.vercel.app/sitemap.xml
