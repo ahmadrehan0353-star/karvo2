@@ -7,7 +7,7 @@
 const firebaseConfig = {
   apiKey: "AIzaSyCVf7AzjRZO09JLW0nw1MSrvUZp5qz3mGg",
   authDomain: "karvo-69a4c.firebaseapp.com",
-  projectId: "karvo-69a4c,
+  projectId: "karvo-69a4c",
   storageBucket: "karvo-69a4c.firebasestorage.app",
   messagingSenderId: "490190724361",
   appId: "1:490190724361:web:2427cabe9c7251faf387d8"
