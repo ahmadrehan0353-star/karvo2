@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Karvo</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150"><rect width="150" height="150" rx="30" fill="%23202225"/><rect x="50" y="38" width="14" height="74" rx="7" fill="%23ffffff"/><polygon points="104,38 74,72 86,72 62,112 92,76 80,76" fill="%23f07032"/></svg>'>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#eeedea;--paper:#17181a;--card:#222427;--green:#f07032;
+    --muted:#a3a49e;--line:#2c2e33;--line2:#34373d;--clay:#e0664a;
+    --grad:linear-gradient(135deg,#f58a4a,#e85d1f);--ring:rgba(240,112,50,.28);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;color:var(--ink);min-height:100vh;padding:24px;background:var(--paper)}
+  .wrap{max-width:860px;margin:0 auto;padding:16px 0 60px}
+  h1{font-family:'Bricolage Grotesque',sans-serif;font-size:1.7rem;margin-bottom:4px}
+  .sub{color:var(--muted);font-size:.92rem;margin-bottom:28px}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+  .btn{border:none;border-radius:999px;padding:10px 20px;font-family:inherit;font-weight:600;font-size:.9rem;cursor:pointer}
+  .btn-main{background:var(--grad);color:#2a1300}
+  .btn-ghost{background:transparent;border:1px solid var(--line2);color:var(--ink)}
+  .btn-ok{background:#2f7a22;color:#fff}
+  .btn-no{background:transparent;border:1px solid #6b3a2a;color:#f0b3a0}
+  input{background:var(--card);border:1px solid var(--line2);border-radius:12px;padding:12px 14px;font-family:inherit;font-size:.95rem;color:var(--ink);width:100%;max-width:320px}
+  input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px var(--ring)}
+  .gate{max-width:400px;margin:80px auto;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:32px;text-align:center}
+  .gate input{max-width:100%;margin-top:12px}
+  .gate .btn{width:100%;margin-top:16px;padding:13px}
+  .tabsbar{display:flex;gap:8px;margin-bottom:18px}
+  .tabsbar button{background:var(--card);border:1px solid var(--line2);color:var(--muted);border-radius:999px;padding:8px 18px;font-family:inherit;font-weight:600;font-size:.85rem;cursor:pointer}
+  .tabsbar button.on{background:var(--grad);color:#2a1300;border-color:transparent}
+  .app{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:14px}
+  .app .top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+  .app b{font-size:1.05rem}
+  .app .trade{color:var(--green);font-weight:600;font-size:.88rem}
+  .app .details{font-size:.88rem;color:var(--muted);line-height:1.7}
+  .app .actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .empty{color:var(--muted);text-align:center;padding:50px 0}
+  .msg{font-size:.85rem;color:var(--muted);margin-top:10px}
+  #panel{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="gate" id="gate">
+    <h1>Karvo Admin</h1>
+    <p class="sub">Owner login only</p>
+    <input type="email" id="aEmail" placeholder="Your email">
+    <input type="password" id="aPass" placeholder="Password">
+    <button class="btn btn-main" onclick="adminLogin()">Log in</button>
+    <div class="msg" id="gateMsg"></div>
+  </div>
+
+  <div id="panel">
+    <div class="row">
+      <div>
+        <h1>Applications</h1>
+        <p class="sub" id="who"></p>
+      </div>
+      <button class="btn btn-ghost" onclick="auth.signOut().then(()=>location.reload())">Log out</button>
+    </div>
+    <div class="tabsbar">
+      <button id="tPending" class="on" onclick="setTab('pending')">Pending <span id="cPending"></span></button>
+      <button id="tApproved" onclick="setTab('approved')">Approved <span id="cApproved"></span></button>
+    </div>
+    <input type="search" id="q" placeholder="Search name, trade, area or phone…" oninput="renderList()" style="max-width:100%;margin-bottom:16px">
+    <div id="list"><div class="empty">Loading…</div></div>
+  </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+  let tab = 'pending';
+
+  auth.onAuthStateChanged(u => {
+    if(u && u.email === OWNER_EMAIL){
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('panel').style.display = 'block';
+      document.getElementById('who').textContent = 'Logged in as ' + u.email;
+      load();
+    } else if(u){
+      // signed in but not the owner
+      auth.signOut();
+      document.getElementById('gateMsg').textContent = 'This account is not the admin.';
+    }
+  });
+
+  function adminLogin(){
+    const e = document.getElementById('aEmail').value.trim();
+    const p = document.getElementById('aPass').value;
+    document.getElementById('gateMsg').textContent = '';
+    auth.signInWithEmailAndPassword(e, p).catch(() => {
+      document.getElementById('gateMsg').textContent = 'Login failed — check email and password.';
+    });
+  }
+  document.getElementById('aPass').addEventListener('keydown', e => { if(e.key==='Enter') adminLogin(); });
+
+  function setTab(t){
+    tab = t;
+    document.getElementById('tPending').classList.toggle('on', t==='pending');
+    document.getElementById('tApproved').classList.toggle('on', t==='approved');
+    load();
+  }
+
+  let docsCache = [];
+
+  function load(){
+    const list = document.getElementById('list');
+    list.innerHTML = '<div class="empty">Loading…</div>';
+    // counts for both tabs
+    ['pending','approved'].forEach(s => {
+      db.collection('pros').where('status','==',s).get().then(snap => {
+        document.getElementById(s==='pending'?'cPending':'cApproved').textContent = '(' + snap.size + ')';
+      }).catch(()=>{});
+    });
+    db.collection('pros').where('status','==', tab).get().then(snap => {
+      docsCache = snap.docs;
+      renderList();
+    }).catch(err => {
+      console.error(err);
+      list.innerHTML = '<div class="empty">Could not load — check your Firestore rules and connection.</div>';
+    });
+  }
+
+  function renderList(){
+    const list = document.getElementById('list');
+    const q = (document.getElementById('q').value || '').toLowerCase();
+    const docs = docsCache.filter(d => {
+      const x = d.data();
+      return !q || [x.name, x.trade, x.area, x.phone, x.email].join(' ').toLowerCase().includes(q);
+    });
+    if(!docs.length){
+      list.innerHTML = '<div class="empty">' + (q ? 'No matches for your search.' : (tab==='pending' ? 'No pending applications — you\'re all caught up! 🎉' : 'No approved pros yet.')) + '</div>';
+      return;
+    }
+    list.innerHTML = docs.map(d => {
+      const x = d.data();
+      const when = x.createdAt && x.createdAt.toDate ? x.createdAt.toDate().toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'}) : '';
+      return `<div class="app">
+        <div class="top">
+          <div><b>${esc(x.name)}</b> <span class="trade">· ${esc(x.trade)}</span> ${x.featured ? '⭐' : ''}</div>
+          <span style="font-size:.8rem;color:var(--muted)">${when ? 'Applied ' + when : ''}${x.avail === false ? ' · marked busy' : ''}</span>
+        </div>
+        <div class="details">
+          📞 ${esc(x.phone)} &nbsp;·&nbsp; 📍 ${esc(x.area || '-')} &nbsp;·&nbsp; 🛠️ ${esc(x.exp || '-')} yrs &nbsp;·&nbsp; 💰 ${esc(x.rate || '-')}
+          ${x.email ? '<br>✉️ ' + esc(x.email) : ''}
+          ${x.about ? '<br>📝 ' + esc(x.about) : ''}
+        </div>
+        <div class="actions">
+          ${tab==='pending'
+            ? `<button class="btn btn-ok" onclick="setStatus('${d.id}','approved')">✔ Approve</button>
+               <button class="btn btn-no" onclick="if(confirm('Reject and delete this application?'))removeApp('${d.id}')">✕ Reject</button>`
+            : `<button class="btn btn-ghost" onclick="toggleFeature('${d.id}', ${x.featured ? 'true' : 'false'})">${x.featured ? '★ Unfeature' : '☆ Feature on site'}</button>
+               <button class="btn btn-ghost" onclick="editPro('${d.id}')">✎ Edit</button>
+               <button class="btn btn-no" onclick="if(confirm('Remove this pro from the site? This deletes their profile.'))removeApp('${d.id}')">🗑 Delete pro</button>`}
+          <a class="btn btn-ghost" href="https://wa.me/${(x.phone||'').replace(/\D/g,'')}" target="_blank" rel="noopener" style="text-decoration:none">WhatsApp them</a>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function setStatus(id, status){
+    db.collection('pros').doc(id).update({status}).then(load);
+  }
+  function removeApp(id){
+    db.collection('pros').doc(id).delete().then(load);
+  }
+  function toggleFeature(id, cur){
+    db.collection('pros').doc(id).update({featured: !cur}).then(load);
+  }
+  function editPro(id){
+    const d = docsCache.find(x => x.id === id);
+    if(!d) return;
+    const x = d.data();
+    const phone = prompt('Phone / WhatsApp:', x.phone || '');            if(phone === null) return;
+    const area  = prompt('Area:', x.area || '');                          if(area === null) return;
+    const rate  = prompt('Rate (full text, e.g. Rs 1,200 per visit):', x.rate || ''); if(rate === null) return;
+    const about = prompt('About (shown on profile):', x.about || '');     if(about === null) return;
+    db.collection('pros').doc(id).update({
+      phone: phone.trim(), area: area.trim(), rate: rate.trim(), about: about.trim()
+    }).then(load);
+  }
+    function esc(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+</script>
+</body>
+</html>

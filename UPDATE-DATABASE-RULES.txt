@@ -1,0 +1,39 @@
+IMPORTANT — one required step for the new Pro Login to work
+============================================================
+
+Pros can now log in and edit their own profiles, so the database
+rules must allow a pro to update THEIR OWN listing (without being
+able to approve themselves or touch anyone else's).
+
+Do this once:
+
+1. Firebase console -> Firestore Database -> Rules tab
+2. Select everything, delete it, paste the rules below
+3. Click Publish
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /pros/{id} {
+      allow create: if request.resource.data.status == 'pending';
+      allow read: if resource.data.status == 'approved'
+                  || (request.auth != null && request.auth.token.email == 'ahmadrehan0353@gmail.com')
+                  || (request.auth != null && request.auth.token.email == resource.data.email);
+      allow update: if request.auth != null && (
+                      request.auth.token.email == 'ahmadrehan0353@gmail.com'
+                      || (request.auth.token.email == resource.data.email
+                          && request.resource.data.status == resource.data.status
+                          && request.resource.data.email == resource.data.email)
+                    );
+      allow delete: if request.auth != null && request.auth.token.email == 'ahmadrehan0353@gmail.com';
+    }
+  }
+}
+
+What this means in plain words:
+- Anyone can SUBMIT an application (always saved as "pending")
+- Everyone can only SEE approved pros
+- A pro can read and edit THEIR OWN profile (phone, rate, area,
+  about, availability) but CANNOT change their status or email —
+  so nobody can approve themselves
+- Only YOU can approve, feature, or delete anyone

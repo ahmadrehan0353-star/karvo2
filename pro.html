@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pro login — Karvo</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150"><rect width="150" height="150" rx="30" fill="%23202225"/><rect x="50" y="38" width="14" height="74" rx="7" fill="%23ffffff"/><polygon points="104,38 74,72 86,72 62,112 92,76 80,76" fill="%23f07032"/></svg>'>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#eeedea;--paper:#17181a;--card:#222427;--green:#f07032;
+    --marigold:#f5b04c;--muted:#a3a49e;--line:#2c2e33;--line2:#34373d;--clay:#e0664a;
+    --grad:linear-gradient(135deg,#f58a4a,#e85d1f);--ring:rgba(240,112,50,.28);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;color:var(--ink);min-height:100vh;padding:24px;
+    background:
+      radial-gradient(700px 420px at 88% -10%, rgba(240,112,50,.16), transparent 60%),
+      var(--paper);}
+  .wrap{max-width:640px;margin:0 auto;padding:12px 0 60px}
+  .logo{display:inline-flex;align-items:center;gap:10px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.4rem;color:var(--ink);text-decoration:none;margin-bottom:30px}
+  .logo-mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#2a2c30 60%,#1d1f22);display:grid;place-items:center;border:1.5px dashed rgba(255,217,59,.75)}
+  .logo-mark svg{width:68%;height:68%}
+  h1{font-family:'Bricolage Grotesque',sans-serif;font-size:1.6rem;margin-bottom:6px}
+  .sub{color:var(--muted);font-size:.92rem;margin-bottom:24px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:32px 28px}
+  label{display:block;font-size:.85rem;font-weight:600;margin:14px 0 6px}
+  input,select,textarea{width:100%;background:var(--paper);border:1px solid var(--line2);border-radius:12px;padding:12px 14px;font-family:inherit;font-size:.95rem;color:var(--ink)}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px var(--ring)}
+  .btn{border:none;border-radius:999px;padding:13px 26px;font-family:inherit;font-weight:600;font-size:.95rem;cursor:pointer;background:var(--grad);color:#2a1300;box-shadow:0 4px 16px rgba(240,112,50,.28);margin-top:20px;transition:filter .15s}
+  .btn:hover{filter:brightness(1.07)}
+  .btn:disabled{opacity:.6;cursor:wait}
+  .btn-ghost{background:transparent;border:1px solid var(--line2);color:var(--ink);box-shadow:none}
+  .msg{margin-top:16px;font-size:.88rem;border-radius:10px;padding:12px 14px;display:none}
+  .msg.err{display:block;background:#3a1c15;border:1px solid #6b3a2a;color:#f0b3a0}
+  .msg.ok{display:block;background:#1e2b1c;border:1px solid #3f6b38;color:#8fd97f}
+  .status{border-radius:14px;padding:16px 18px;font-size:.92rem;margin-bottom:22px}
+  .status.pending{background:#3a2c10;border:1px solid #6b5220;color:#f5d08a}
+  .status.approved{background:#1e2b1c;border:1px solid #3f6b38;color:#8fd97f}
+  .rowhead{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+  .who{font-size:.85rem;color:var(--muted)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:560px){.grid2{grid-template-columns:1fr}}
+  .switch{display:flex;align-items:center;gap:10px;margin-top:18px;font-size:.92rem;cursor:pointer}
+  .switch input{width:auto}
+  #dash{display:none}
+  .aux{margin-top:16px;text-align:center;font-size:.85rem}
+  .aux button{background:none;border:none;color:var(--green);font-family:inherit;font-size:.85rem;cursor:pointer;font-weight:600}
+  .aux button:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="logo" href="index.html">
+    <span class="logo-mark"><svg viewBox="30 25 90 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="42" y="34" width="15" height="82" rx="7.5" fill="#ffffff"/><polygon points="104,32 71,70 84,70 58,118 91,74 78,74" fill="#f07032"/></svg></span>
+    Karvo
+  </a>
+
+  <div class="card" id="gate">
+    <h1>Pro login</h1>
+    <p class="sub">Sign in with the email and password you set when applying.</p>
+    <label for="pEmail">Email</label>
+    <input type="email" id="pEmail" placeholder="you@example.com">
+    <label for="pPass">Password</label>
+    <input type="password" id="pPass" placeholder="Your password">
+    <button class="btn" id="pBtn" onclick="proLogin()">Log in</button>
+    <div class="msg" id="gateMsg"></div>
+    <div class="aux">
+      <button onclick="resetPass()">Forgot your password?</button> ·
+      <a href="join.html" style="color:var(--green);font-weight:600;text-decoration:none">Not registered? Apply here</a>
+    </div>
+  </div>
+
+  <div id="dash">
+    <div class="rowhead">
+      <div>
+        <h1>Your Karvo profile</h1>
+        <p class="who" id="who"></p>
+      </div>
+      <button class="btn btn-ghost" style="margin-top:0" onclick="auth.signOut().then(()=>location.reload())">Log out</button>
+    </div>
+    <div class="status" id="statusBox"></div>
+    <div class="card">
+      <div class="grid2">
+        <div><label>Name</label><input id="dName" disabled></div>
+        <div><label>Trade</label><input id="dTrade" disabled></div>
+        <div><label>Phone / WhatsApp</label><input id="dPhone" type="tel"></div>
+        <div><label>Area you serve</label><input id="dArea"></div>
+        <div><label>Years of experience</label><input id="dExp" type="number" min="0" max="60"></div>
+        <div>
+          <label>Your rate (Rs)</label>
+          <div style="display:flex;gap:8px">
+            <input id="dRate" type="number" min="0" style="flex:1;min-width:0">
+            <select id="dUnit" style="flex:1;min-width:0"></select>
+          </div>
+        </div>
+      </div>
+      <label>About your work (shown on your profile)</label>
+      <textarea id="dAbout" rows="3"></textarea>
+      <label class="switch"><input type="checkbox" id="dAvail"> I'm available for new jobs right now</label>
+      <button class="btn" id="saveBtn" onclick="saveProfile()">Save changes</button>
+      <div class="msg" id="dashMsg"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+  const ALL_UNITS = ["per visit","per job","per day","per hour","per month","per suit","per alteration","per subject","per session","per point","per service","per AC unit","per gas refill","per item","per sq ft","per room","per event","per hand","per bridal","per person"];
+  document.getElementById('dUnit').innerHTML = ALL_UNITS.map(u => `<option>${u}</option>`).join("");
+
+  let myDoc = null;
+
+  auth.onAuthStateChanged(u => {
+    if(!u) return;
+    if(u.email === OWNER_EMAIL){ location.href = 'admin.html'; return; }
+    db.collection('pros').where('email','==', u.email.toLowerCase()).get().then(snap => {
+      if(snap.empty){
+        auth.signOut();
+        show('gateMsg', 'No pro application found for this email. If you\'re a customer, use the customer login on the home page.', 'err');
+        return;
+      }
+      myDoc = snap.docs[0];
+      openDash(u, myDoc.data());
+    }).catch(err => {
+      console.error(err);
+      auth.signOut();
+      show('gateMsg', 'Could not load your profile — try again in a moment.', 'err');
+    });
+  });
+
+  function proLogin(){
+    const e = document.getElementById('pEmail').value.trim();
+    const p = document.getElementById('pPass').value;
+    if(!e || !p){ show('gateMsg','Enter your email and password.','err'); return; }
+    document.getElementById('pBtn').disabled = true;
+    auth.signInWithEmailAndPassword(e, p)
+      .catch(() => show('gateMsg','Login failed — check your email and password.','err'))
+      .finally(() => document.getElementById('pBtn').disabled = false);
+  }
+  document.getElementById('pPass').addEventListener('keydown', e => { if(e.key==='Enter') proLogin(); });
+
+  function resetPass(){
+    const e = document.getElementById('pEmail').value.trim();
+    if(!e){ show('gateMsg','Type your email above first, then tap reset.','err'); return; }
+    auth.sendPasswordResetEmail(e)
+      .then(() => show('gateMsg','Password reset email sent — check inbox and spam.','ok'))
+      .catch(() => show('gateMsg','Could not send reset email — check the address.','err'));
+  }
+
+  function openDash(u, x){
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('dash').style.display = 'block';
+    document.getElementById('who').textContent = u.email;
+    const s = document.getElementById('statusBox');
+    if(x.status === 'approved'){
+      s.className = 'status approved';
+      s.innerHTML = '<b>✔ You are live on Karvo!</b> Customers in your area can see your profile and book you.';
+    } else {
+      s.className = 'status pending';
+      s.innerHTML = '<b>⏳ Application under review.</b> The Karvo team is verifying your details — we\'ll contact you on WhatsApp soon.';
+    }
+    document.getElementById('dName').value = x.name || '';
+    document.getElementById('dTrade').value = x.trade || '';
+    document.getElementById('dPhone').value = x.phone || '';
+    document.getElementById('dArea').value = x.area || '';
+    document.getElementById('dExp').value = x.exp || '';
+    document.getElementById('dRate').value = x.rateAmount || '';
+    if(x.rateUnit && ALL_UNITS.includes(x.rateUnit)) document.getElementById('dUnit').value = x.rateUnit;
+    document.getElementById('dAbout').value = x.about || '';
+    document.getElementById('dAvail').checked = x.avail !== false;
+  }
+
+  function saveProfile(){
+    if(!myDoc) return;
+    const amt = document.getElementById('dRate').value.trim();
+    const unit = document.getElementById('dUnit').value;
+    const upd = {
+      phone: document.getElementById('dPhone').value.trim(),
+      area: document.getElementById('dArea').value.trim(),
+      exp: document.getElementById('dExp').value || '',
+      rateAmount: amt,
+      rateUnit: unit,
+      rate: amt ? 'Rs ' + Number(amt).toLocaleString() + ' ' + unit : '',
+      about: document.getElementById('dAbout').value.trim(),
+      avail: document.getElementById('dAvail').checked
+    };
+    const btn = document.getElementById('saveBtn');
+    btn.disabled = true;
+    db.collection('pros').doc(myDoc.id).update(upd)
+      .then(() => show('dashMsg','Saved! Your profile is updated on the site.','ok'))
+      .catch(err => { console.error(err); show('dashMsg','Could not save — check your connection (and that the new database rules are published).','err'); })
+      .finally(() => btn.disabled = false);
+  }
+
+  function show(id, text, kind){
+    const el = document.getElementById(id);
+    el.textContent = text;
+    el.className = 'msg ' + kind;
+  }
+</script>
+</body>
+</html>
